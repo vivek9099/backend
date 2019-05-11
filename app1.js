@@ -3,8 +3,10 @@ const app=express();
 const bodyParser=require('body-parser');
 const mongoose=require('mongoose');
 Question=require('./models/question');
+Answer =require('./models/answer');
 
 mongoose.connect('mongodb://localhost/chat');
+app.use(bodyParser.json());
 var db=mongoose.connection;
 
 app.get('/',function(req,res){
@@ -15,7 +17,7 @@ app.get('/api/questions',(req,res)=>{
        if(err){
            throw err;
       }
-      console.log("Response is: ",questions)
+      
       res.json(questions);
 
    });
@@ -27,8 +29,29 @@ app.post('/api/questions', (req, res) => {
 		if(err){
 			throw err;
         }
-        console.log("res on save: ",question)
+    
 		res.json(question);
+	});
+});
+app.get('/api/answers',(req,res)=>{
+    Answer.getAnswers((err,answers)=>{
+        if(err){
+            throw err;
+       }
+       
+       res.json(answers);
+ 
+    });
+});
+app.post('/api/answers', (req, res) => {
+    console.log("body is: ",req);
+    let  answer = req.body;
+	Answer.addAnswers(answer, (err, answer) => {
+		if(err){
+			throw err;
+        }
+    
+		res.json(answer);
 	});
 });
 app.listen(3000);
